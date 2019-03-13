@@ -1,0 +1,36 @@
+[global]
+reportName = "analysis.html"
+
+[[logs]]
+logType = "jdbc"
+templateFile = "jdbc.tpl"
+reportFileName = "jdbc-report.html"
+separator = "|"
+splitSeparator = "\n"
+lineMatchRegex = '\|(\d{1,10}) ms\|'
+fieldsMatchRegex  = [
+           ['threadId','^(\d{1,10})\|'],
+           ['dataSourceId','^*(master)'],
+           ['dateAndTime','^*((\d{2})(\d{2})(\d{2})*-([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d):(\d{3}))'],
+           ['executionTime','\|(\d{3,10}) ms\|'],
+           ['category','^*(statement)'],
+           ['statement','(SELECT|INSERT INTO|UPDATE|WITH|DELETE).*\|'],
+           ['sql','\|(INSERT INTO|UPDATE|SELECT|WITH|DELETE)[^?]*$'],
+           ['trace','\/\*(.*?)END'],
+]
+
+
+[[logs]]
+logType = "console"
+templateFile = "console.tpl"
+reportFileName = "console-report.html"
+separator = "|"
+splitSeparator = "\n"
+lineMatchRegex = '((?P<starting>^((STATUS \||ERROR  \||INFO   \|)( jvm 1    \|| wrapper  \|)( main    \|)))(?P<timestamp> \d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}.\d{3}))'
+fieldsMatchRegex  = [
+           ['errorLine','((?P<starting>^((STATUS \||ERROR  \||INFO   \|)( jvm 1    \|| wrapper  \|)( main    \|)))(?P<timestamp> \d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}).\d{3} \|).*?ERROR(?P<thread>(\s\[[A-Za-z0-9-:\.\s\[]+\])).*(?P<job>(\[[a-zA-Z_\.]+\]|\([a-zA-Z_\.\-]+\)))(?P<message>\s(.*))'],
+           ['exceptionLine','((?P<starting>^((STATUS \||ERROR  \||INFO   \|)( jvm 1    \|| wrapper  \|)( main    \|)))(?P<timestamp> \d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}).\d{3} \|).*(?P<exception>\s([a-zA-Z\.]*Exception))(\s|:)(?P<message>(.*))'],
+           ['causedby','(?P<causedby>(\sCaused by:.+))'],
+           ['causedbyLine','((?P<starting>^((STATUS \||ERROR  \||INFO   \|)( jvm 1    \|| wrapper  \|)( main    \|)))(?P<timestamp> \d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}).\d{3} \|).*?(Caused\sby:)(?P<causedby>(\s.*Exception))(\s|:)(?P<message>(.*))'],
+]
+
